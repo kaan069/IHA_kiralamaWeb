@@ -1,0 +1,50 @@
+<!-- ihaApp/templates/registration/register.html -->
+
+{% extends 'ihaApp/base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>Kayıt Ol</h2>
+    <form method="post" class="form" id="registerForm" action="{% url 'register_user' %}">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <label for="id_phone_number">Telefon Numarası:</label>
+      <input type="text" name="phone_number" id="id_phone_number" required>
+      <button type="button" class="btn btn-primary" onclick="registerUser()">Kayıt Ol</button>
+    </form>
+
+    <p class="mt-3">Zaten bir hesabınız var mı? <a href="{% url 'login' %}">Oturum Aç</a></p>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script>
+    function registerUser() {
+      var form = $('#registerForm');
+      var formData = form.serialize();
+
+      // CSRF token'ı manuel olarak ekleyin
+      var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+      formData += '&csrfmiddlewaretoken=' + csrfToken;
+
+      $.ajax({
+        type: 'POST',
+        url: form.attr('action'),
+        data: formData,
+        success: function(response) {
+          if (response.success) {
+            console.log('Başarılı kayıt');
+            // Başarılı kayıt durumunda yapılacak işlemler
+          } else {
+            console.log('Kayıt başarısız');
+            console.log(response.errors);
+            // Kayıt sırasında hata oluştuğunda yapılacak işlemler
+          }
+        },
+        error: function(error) {
+          console.log('AJAX hatası');
+          console.log(error);
+        }
+      });
+    }
+  </script>
+{% endblock %}
